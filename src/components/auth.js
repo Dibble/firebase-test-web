@@ -33,17 +33,27 @@ class Auth extends Component {
   }
 
   signInWithGoogle () {
-    console.log('sign in with Google')
     const provider = new firebase.auth.GoogleAuthProvider()
     firebase.auth().signInWithRedirect(provider)
   }
 
+  async signOut () {
+    try {
+      await firebase.auth().signOut()
+      this.setState({
+        user: null
+      })
+    } catch (err) {
+      console.error(`failed to sign out: ${err}`)
+    }
+  }
+
   render () {
-    return <div>
-      {this.state.user ?
-        `Hello ${this.state.user.displayName}` :
-        <button onClick={this.signInWithGoogle.bind(this)}>Sign in with Google</button>}
-    </div>
+    return this.state.user ? <div>
+      Hello {this.state.user.displayName}
+      <button onClick={this.signOut.bind(this)}>Sign Out</button>
+    </div> :
+      <button onClick={this.signInWithGoogle.bind(this)}>Sign in with Google</button>
   }
 }
 
