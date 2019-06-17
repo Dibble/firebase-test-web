@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as firebase from 'firebase/app'
 import 'firebase/auth'
 
@@ -12,49 +12,44 @@ const firebaseConfig = {
   appId: "1:768520453781:web:6944516bedfbfbee"
 }
 
-class Auth extends Component {
-  constructor () {
-    super()
+const Auth = () => {
+  const [user, setUser] = useState(null)
 
-    this.state = {
-      user: null
-    }
-
+  useEffect(() => {
     firebase.initializeApp(firebaseConfig)
-  }
+  }, [])
 
-  async componentDidMount () {
-    let authResult = await firebase.auth().getRedirectResult()
-    if (authResult.user) {
-      this.setState({
-        user: authResult.user
-      })
+  useEffect(() => {
+    async function tryGetRedirectResult () {
+      let authResult = await firebase.auth().getRedirectResult()
+      if (authResult.user) {
+        setUser(authResult.user)
+      }
     }
-  }
 
-  signInWithGoogle () {
+    tryGetRedirectResult()
+  }, [])
+
+  const signInWithGoogle = () => {
     const provider = new firebase.auth.GoogleAuthProvider()
     firebase.auth().signInWithRedirect(provider)
   }
 
-  async signOut () {
+  const signOut = async () => {
     try {
       await firebase.auth().signOut()
-      this.setState({
-        user: null
-      })
+      setUser(null)
     } catch (err) {
       console.error(`failed to sign out: ${err}`)
     }
   }
 
-  render () {
-    return this.state.user ? <div>
-      Hello {this.state.user.displayName}
-      <button onClick={this.signOut.bind(this)}>Sign Out</button>
+  return user ?
+    <div>
+      Hello {user.displayName}
+      <button onClick={signOut}>Sign Out</button>
     </div> :
-      <button onClick={this.signInWithGoogle.bind(this)}>Sign in with Google</button>
-  }
+    <button onClick={signInWithGoogle}>Sign In With Google</button>
 }
 
 export default Auth
