@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import * as firebase from 'firebase/app'
 import 'firebase/auth'
+import { Button, Menu, MenuItem, Typography } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
 
 const firebaseConfig = {
   apiKey: "AIzaSyDCac1XVxp35dZtU3i5tABl3AnYV2U_XjE",
@@ -12,8 +14,16 @@ const firebaseConfig = {
   appId: "1:768520453781:web:6944516bedfbfbee"
 }
 
+const useStyles = makeStyles(theme => ({
+  displayName: {
+    cursor: 'pointer'
+  }
+}))
+
 const Auth = () => {
+  const classes = useStyles()
   const [user, setUser] = useState(null)
+  const [menuAnchorElement, setMenuAnchorElement] = useState(null)
 
   useEffect(() => {
     firebase.initializeApp(firebaseConfig)
@@ -46,10 +56,12 @@ const Auth = () => {
 
   return user ?
     <div>
-      Hello {user.displayName}
-      <button onClick={signOut}>Sign Out</button>
+      <Typography className={classes.displayName} onClick={(event) => setMenuAnchorElement(event.currentTarget)}>{user.displayName}</Typography>
+      <Menu anchorEl={menuAnchorElement} open={Boolean(menuAnchorElement)} onClose={() => setMenuAnchorElement(null)}>
+        <MenuItem onClick={() => { setMenuAnchorElement(null); signOut() }}>Sign Out</MenuItem>
+      </Menu>
     </div> :
-    <button onClick={signInWithGoogle}>Sign In With Google</button>
+    <Button color='primary' variant='contained' onClick={signInWithGoogle}>Sign In With Google</Button>
 }
 
 export default Auth
