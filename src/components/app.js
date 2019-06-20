@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Auth from './auth'
 
-import { AppBar, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Button, Toolbar, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({
@@ -15,16 +15,33 @@ const useStyles = makeStyles(theme => ({
 
 const App = () => {
   const classes = useStyles()
+  const [user, setUser] = useState(null)
+
+  const getMyGames = async () => {
+    let headers = new Headers({
+      'Authorization': `Bearer ${await user.getIdToken()}`
+    })
+    let result = await fetch('https://us-central1-test-project-352b6.cloudfunctions.net/getMyGames', {
+      headers
+    })
+
+    if (result.status === 200) {
+      console.log(await result.text())
+    } else {
+      console.error(result.status, await result.text())
+    }
+  }
 
   return <div className={classes.root}>
     <AppBar position='static'>
       <Toolbar>
         <Typography className={classes.title} variant='h6'>
-          Test Project
+          Diplomacy
         </Typography>
-        <Auth />
+        <Auth user={user} setUser={setUser} />
       </Toolbar>
     </AppBar>
+    {user && <Button onClick={getMyGames}>Get My Games</Button>}
   </div>
 }
 

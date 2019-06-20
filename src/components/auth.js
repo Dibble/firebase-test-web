@@ -20,9 +20,8 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const Auth = () => {
+const Auth = ({ user, setUser }) => {
   const classes = useStyles()
-  const [user, setUser] = useState(null)
   const [menuAnchorElement, setMenuAnchorElement] = useState(null)
 
   useEffect(() => {
