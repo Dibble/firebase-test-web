@@ -16,6 +16,7 @@ const useStyles = makeStyles(theme => ({
 const App = () => {
   const classes = useStyles()
   const [user, setUser] = useState(null)
+  const [games, setGames] = useState(null)
 
   const getMyGames = async () => {
     let headers = new Headers({
@@ -26,7 +27,7 @@ const App = () => {
     })
 
     if (result.status === 200) {
-      console.log(await result.text())
+      setGames(await result.json())
     } else {
       console.error(result.status, await result.text())
     }
@@ -41,7 +42,11 @@ const App = () => {
         <Auth user={user} setUser={setUser} />
       </Toolbar>
     </AppBar>
-    {user && <Button onClick={getMyGames}>Get My Games</Button>}
+    {user &&
+      <div>
+        <Button onClick={getMyGames}>Get My Games</Button>
+        {games && games.map(game => <span id={game.id} key={game.id}>{game.name}</span>)}
+      </div>}
   </div>
 }
 
