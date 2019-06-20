@@ -1,6 +1,5 @@
 import React from 'react'
 import Auth from './auth'
-import Clicker from './clicker'
 
 import { AppBar, Toolbar, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles'
@@ -26,7 +25,6 @@ const App = () => {
         <Auth />
       </Toolbar>
     </AppBar>
-    <Clicker />
   </div>
 }
 
