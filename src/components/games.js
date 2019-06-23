@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { Button } from '@material-ui/core'
 
-const getMyGames = async (user) => {
+const fetchGames = async (user) => {
   let headers = new Headers({
     'Authorization': `Bearer ${await user.getIdToken()}`
   })
@@ -14,7 +14,7 @@ const getMyGames = async (user) => {
     return await result.json()
   }
 
-  console.error('getMyGames failed', result.status, await result.text())
+  console.error('fetchGames failed', result.status, await result.text())
   return null
 }
 
@@ -61,10 +61,14 @@ const joinGame = async (user) => {
 const Games = ({ user }) => {
   const [games, setGames] = useState([])
 
-  const onGetMyGames = async () => {
-    let myGames = await getMyGames(user)
-    if (myGames) setGames(myGames)
-  }
+  useEffect(() => {
+    async function loadGames () {
+      let myGames = await fetchGames(user)
+      if (myGames) setGames(myGames)
+    }
+
+    loadGames()
+  }, [])
 
   const onCreateGame = async () => {
     let newGame = await createGame(user)
@@ -76,14 +80,14 @@ const Games = ({ user }) => {
     if (joinedGame) setGames(games.concat(joinedGame))
   }
 
-  return <div>
-    <Button onClick={onGetMyGames}>Get My Games</Button>
-    {games && games.map(game => <span id={game.id} key={game.id}>{game.name}</span>)}
+  return games ? <div>
+    {games && games.map(game => <span id={game.id} key={game.id}>{game.name}</span>)
+    }
     <Button onClick={onCreateGame}>Create New Game</Button>
     <input type='text' id='newGameName' placeholder='New Game Name'></input>
     <Button onClick={onJoinGame}>Join Game</Button>
     <input type='text' id='joinGameID' placeholder='Join Game ID'></input>
-  </div>
+  </div > : <div>Loading...</div>
 }
 
 export default Games
