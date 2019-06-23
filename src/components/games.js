@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-
-import { Button } from '@material-ui/core'
+import { Button, Table, TableBody, TableCell, TableRow, Typography } from '@material-ui/core'
 
 const fetchGames = async (user) => {
   let headers = new Headers({
@@ -80,14 +79,24 @@ const Games = ({ user }) => {
     if (joinedGame) setGames(games.concat(joinedGame))
   }
 
-  return games ? <div>
-    {games && games.map(game => <span id={game.id} key={game.id}>{game.name}</span>)
+  return <div>
+    <Typography variant='h6'>My Games</Typography>
+    {games &&
+      <Table>
+        <TableBody>
+          {games.map(game => (
+            <TableRow key={game.id} hover={true}>
+              <TableCell>{game.name}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     }
     <Button onClick={onCreateGame}>Create New Game</Button>
     <input type='text' id='newGameName' placeholder='New Game Name'></input>
     <Button onClick={onJoinGame}>Join Game</Button>
     <input type='text' id='joinGameID' placeholder='Join Game ID'></input>
-  </div > : <div>Loading...</div>
+  </div >
 }
 
 export default Games
