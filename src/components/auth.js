@@ -20,20 +20,27 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
+let firebaseAuth
+
 const Auth = ({ user, setUser }) => {
   const classes = useStyles()
   const [menuAnchorElement, setMenuAnchorElement] = useState(null)
 
   useEffect(() => {
     firebase.initializeApp(firebaseConfig)
+    firebaseAuth = firebase.auth()
+    firebaseAuth.onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user)
+      } else {
+        setUser(null)
+      }
+    })
   }, [])
 
   useEffect(() => {
     async function tryGetRedirectResult () {
-      let authResult = await firebase.auth().getRedirectResult()
-      if (authResult.user) {
-        setUser(authResult.user)
-      }
+      await firebaseAuth.getRedirectResult()
     }
 
     tryGetRedirectResult()
@@ -41,13 +48,12 @@ const Auth = ({ user, setUser }) => {
 
   const signInWithGoogle = () => {
     const provider = new firebase.auth.GoogleAuthProvider()
-    firebase.auth().signInWithRedirect(provider)
+    firebaseAuth.signInWithRedirect(provider)
   }
 
   const signOut = async () => {
     try {
-      await firebase.auth().signOut()
-      setUser(null)
+      await firebaseAuth.signOut()
     } catch (err) {
       console.error(`failed to sign out: ${err}`)
     }
