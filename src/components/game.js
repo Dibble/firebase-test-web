@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Table, TableBody, TableCell, TableRow, Typography } from '@material-ui/core'
 import { getGameDetail } from '../api/games'
 
 const Game = ({ gameId, user }) => {
@@ -13,8 +14,18 @@ const Game = ({ gameId, user }) => {
   }, [])
 
   return <div>
-    <p>{gameId}</p>
-    {game && <p>{game.name}</p>}
+    {!game && <Typography variant='body1'>Loading...</Typography>}
+    {game && <div>
+      <Typography variant='h6'>{game.name}</Typography>
+      <Table>
+        <TableBody>
+          {game.players.map((player) =>
+            <TableRow key={player.id}>
+              <TableCell>{player.name}</TableCell>
+            </TableRow>)}
+        </TableBody>
+      </Table>
+    </div>}
   </div>
 }
 
