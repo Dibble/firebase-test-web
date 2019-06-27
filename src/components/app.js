@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import Auth from './auth'
 import Games from './games'
+import Game from './game'
 
 import { AppBar, Toolbar, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -29,9 +30,14 @@ const App = () => {
           <Auth user={user} setUser={setUser} />
         </Toolbar>
       </AppBar>
-      {user && <Route path="/" render={() => (
-        <Games user={user} />
-      )} />}
+      {user && <div>
+        <Route exact path="/" render={() => (
+          <Games user={user} />
+        )} />
+        <Route path="/game/:gameId" render={({ match }) => (
+          <Game user={user} gameId={match.params.gameId} />
+        )} />
+      </div>}
     </div>
   </Router>
 }
