@@ -4,6 +4,9 @@ import { makeStyles } from '@material-ui/core/styles'
 import { fetchGames, createGame, joinGame } from '../api/games'
 
 const useStyles = makeStyles(theme => ({
+  title: {
+    margin: theme.spacing(1)
+  },
   gameRow: {
     cursor: 'pointer'
   }
@@ -37,7 +40,7 @@ const Games = ({ user }) => {
   }
 
   return <div>
-    <Typography variant='h6'>My Games</Typography>
+    <Typography variant='h6' className={classes.title}>My Games</Typography>
     <Table>
       <TableHead>
         <TableRow>

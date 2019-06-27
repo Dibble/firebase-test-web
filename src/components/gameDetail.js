@@ -6,6 +6,9 @@ import { getGameDetail } from '../api/games'
 const useStyles = makeStyles(theme => ({
   button: {
     margin: theme.spacing(1)
+  },
+  title: {
+    margin: theme.spacing(1)
   }
 }))
 
@@ -31,9 +34,9 @@ const GameDetail = ({ gameId, user }) => {
       <Icon>arrow_back</Icon>
       Back to My Games
     </Button>
-    {!game && <Typography variant='body1'>Loading...</Typography>}
+    {!game && <Typography variant='body1' className={classes.title}>Loading...</Typography>}
     {game && <div>
-      <Typography variant='h6'>{game.name}</Typography>
+      <Typography variant='h6' className={classes.title}>{game.name}</Typography>
       <Table>
         <TableHead>
           <TableCell>Name</TableCell>
@@ -43,7 +46,7 @@ const GameDetail = ({ gameId, user }) => {
           {game.players.map((player) =>
             <TableRow key={player.id}>
               <TableCell>{player.name}</TableCell>
-              <TableCell>{player.country}</TableCell>
+              <TableCell>{player.country ? player.country : 'Not Assigned'}</TableCell>
             </TableRow>)}
         </TableBody>
       </Table>
