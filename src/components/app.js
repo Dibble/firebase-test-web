@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 import Auth from './auth'
 import Games from './games'
 
@@ -18,17 +19,21 @@ const App = () => {
   const classes = useStyles()
   const [user, setUser] = useState(null)
 
-  return <div className={classes.root}>
-    <AppBar position='static'>
-      <Toolbar>
-        <Typography className={classes.title} variant='h6'>
-          Diplomacy
+  return <Router>
+    <div className={classes.root}>
+      <AppBar position='static'>
+        <Toolbar>
+          <Typography className={classes.title} variant='h6'>
+            Diplomacy
         </Typography>
-        <Auth user={user} setUser={setUser} />
-      </Toolbar>
-    </AppBar>
-    {user && <Games user={user} />}
-  </div>
+          <Auth user={user} setUser={setUser} />
+        </Toolbar>
+      </AppBar>
+      {user && <Route path="/" render={() => (
+        <Games user={user} />
+      )} />}
+    </div>
+  </Router>
 }
 
 export default App
