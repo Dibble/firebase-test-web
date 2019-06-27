@@ -7,6 +7,9 @@ const useStyles = makeStyles(theme => ({
   button: {
     margin: theme.spacing(1)
   },
+  userEmail: {
+    color: 'gray'
+  },
   title: {
     margin: theme.spacing(1)
   }
@@ -41,7 +44,8 @@ const GameDetail = ({ gameId, user }) => {
     </Button>
     {!game && <Typography variant='body1' className={classes.title}>Loading...</Typography>}
     {game && <div>
-      <Typography variant='h6' className={classes.title}>{game.name}</Typography>
+      <Typography variant='h5' className={classes.title}>{game.name}</Typography>
+      <Typography variant='h6' className={classes.title}>Players</Typography>
       <Table>
         <TableHead>
           <TableRow>
@@ -52,7 +56,7 @@ const GameDetail = ({ gameId, user }) => {
         <TableBody>
           {game.players.map((player) =>
             <TableRow key={player.id}>
-              <TableCell>{player.name}{player.email ? ` (${player.email})` : ''}</TableCell>
+              <TableCell>{player.name}{player.email ? <small className={classes.userEmail}>{` (${player.email})`}</small> : ''}</TableCell>
               <TableCell>{player.country ? player.country : 'Not Assigned'}</TableCell>
             </TableRow>)}
         </TableBody>
