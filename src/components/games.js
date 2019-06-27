@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { Button, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
 import { fetchGames, createGame, joinGame } from '../api/games'
 
+const useStyles = makeStyles(theme => ({
+  gameRow: {
+    cursor: 'pointer'
+  }
+}))
+
 const Games = ({ user }) => {
+  const classes = useStyles()
+
   const [games, setGames] = useState(null)
   const [loading, setLoading] = useState(false)
 
@@ -41,7 +50,7 @@ const Games = ({ user }) => {
           <TableCell align='center' colSpan={2}>Loading...</TableCell>
         </TableRow>}
         {games && games.map(game => (
-          <TableRow hover={true} key={game.id} onClick={() => { window.location = `/game/${game.id}` }}>
+          <TableRow hover={true} key={game.id} onClick={() => { window.location = `/game/${game.id}` }} className={classes.gameRow}>
             <TableCell>{game.name}</TableCell>
             <TableCell>{game.players.length}</TableCell>
           </TableRow>
