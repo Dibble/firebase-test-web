@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import Auth from './auth'
 import Games from './games'
-import Game from './game'
+import GameDetail from './gameDetail'
 
 import { AppBar, Toolbar, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -35,7 +35,7 @@ const App = () => {
           <Games user={user} />
         )} />
         <Route path="/game/:gameId" render={({ match }) => (
-          <Game user={user} gameId={match.params.gameId} />
+          <GameDetail user={user} gameId={match.params.gameId} />
         )} />
       </div>}
     </div>

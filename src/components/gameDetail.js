@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Table, TableBody, TableCell, TableRow, Typography } from '@material-ui/core'
 import { getGameDetail } from '../api/games'
 
-const Game = ({ gameId, user }) => {
+const GameDetail = ({ gameId, user }) => {
   const [game, setGame] = useState(null)
   useEffect(() => {
     async function loadGame () {
@@ -29,4 +29,4 @@ const Game = ({ gameId, user }) => {
   </div>
 }
 
-export default Game
+export default GameDetail
