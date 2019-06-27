@@ -45,7 +45,7 @@ const GameDetail = ({ gameId, user }) => {
     {!game && <Typography variant='body1' className={classes.title}>Loading...</Typography>}
     {game && <div>
       <Typography variant='h5' className={classes.title}>{game.name}</Typography>
-      <Typography variant='h6' className={classes.title}>Players</Typography>
+      <Typography variant='h6' className={classes.title}>Players {game.players.length}/7</Typography>
       <Table>
         <TableHead>
           <TableRow>
@@ -61,7 +61,7 @@ const GameDetail = ({ gameId, user }) => {
             </TableRow>)}
         </TableBody>
       </Table>
-      {!game.players.some((player) => player.userUID === user.uid) &&
+      {game.players.length < 7 && !game.players.some((player) => player.userUID === user.uid) &&
         <Button variant='contained' color='secondary' className={classes.button} onClick={onJoinGame}>
           <Icon>add</Icon>
           Join Game
