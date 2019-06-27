@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Icon, Table, TableBody, TableCell, TableRow, Typography } from '@material-ui/core'
+import { Button, Icon, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { getGameDetail } from '../api/games'
 
@@ -35,10 +35,15 @@ const GameDetail = ({ gameId, user }) => {
     {game && <div>
       <Typography variant='h6'>{game.name}</Typography>
       <Table>
+        <TableHead>
+          <TableCell>Name</TableCell>
+          <TableCell>Country</TableCell>
+        </TableHead>
         <TableBody>
           {game.players.map((player) =>
             <TableRow key={player.id}>
               <TableCell>{player.name}</TableCell>
+              <TableCell>{player.country}</TableCell>
             </TableRow>)}
         </TableBody>
       </Table>
