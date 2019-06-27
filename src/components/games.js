@@ -90,12 +90,14 @@ const Games = ({ user }) => {
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
+            <TableCell>Players</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {games.map(game => (
             <TableRow key={game.id} hover={true}>
               <TableCell>{game.name}</TableCell>
+              <TableCell>{game.players.length}</TableCell>
             </TableRow>
           ))}
         </TableBody>
