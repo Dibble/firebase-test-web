@@ -35,7 +35,7 @@ const Games = ({ user }) => {
   }
 
   const onJoinGame = async () => {
-    let joinedGame = await joinGame(user)
+    let joinedGame = await joinGame(user, document.getElementById('joinGameID').value)
     if (joinedGame) setGames(games.concat(joinedGame))
   }
 

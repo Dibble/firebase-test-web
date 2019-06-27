@@ -34,8 +34,8 @@ export const createGame = async (user) => {
   return null
 }
 
-export const joinGame = async (user) => {
-  let body = JSON.stringify({ gameID: document.getElementById('joinGameID').value })
+export const joinGame = async (user, gameID) => {
+  let body = JSON.stringify({ gameID })
   let headers = new Headers({
     'Authorization': `Bearer ${await user.getIdToken()}`,
     'Content-Type': 'application/json'

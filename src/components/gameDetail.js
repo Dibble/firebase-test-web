@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Button, Icon, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { getGameDetail } from '../api/games'
+import { getGameDetail, joinGame } from '../api/games'
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -29,6 +29,11 @@ const GameDetail = ({ gameId, user }) => {
     window.location = '/'
   }
 
+  const onJoinGame = async () => {
+    let joinedGame = await joinGame(user, gameId)
+    if (joinedGame) setGame(joinedGame)
+  }
+
   return <div>
     <Button variant='contained' color='secondary' className={classes.button} onClick={backToMyGames}>
       <Icon>arrow_back</Icon>
@@ -39,17 +44,24 @@ const GameDetail = ({ gameId, user }) => {
       <Typography variant='h6' className={classes.title}>{game.name}</Typography>
       <Table>
         <TableHead>
-          <TableCell>Name</TableCell>
-          <TableCell>Country</TableCell>
+          <TableRow>
+            <TableCell>Name</TableCell>
+            <TableCell>Country</TableCell>
+          </TableRow>
         </TableHead>
         <TableBody>
           {game.players.map((player) =>
             <TableRow key={player.id}>
-              <TableCell>{player.name}</TableCell>
+              <TableCell>{player.name}{player.email ? ` (${player.email})` : ''}</TableCell>
               <TableCell>{player.country ? player.country : 'Not Assigned'}</TableCell>
             </TableRow>)}
         </TableBody>
       </Table>
+      {!game.players.some((player) => player.userUID === user.uid) &&
+        <Button variant='contained' color='secondary' className={classes.button} onClick={onJoinGame}>
+          <Icon>add</Icon>
+          Join Game
+        </Button>}
     </div>}
   </div>
 }
