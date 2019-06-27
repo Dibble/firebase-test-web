@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Table, TableBody, TableCell, TableRow, Typography } from '@material-ui/core'
+import { Button, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
 
 const fetchGames = async (user) => {
   let headers = new Headers({
@@ -58,12 +58,15 @@ const joinGame = async (user) => {
 }
 
 const Games = ({ user }) => {
-  const [games, setGames] = useState([])
+  const [games, setGames] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     async function loadGames () {
+      setLoading(true)
       let myGames = await fetchGames(user)
       if (myGames) setGames(myGames)
+      setLoading(false)
     }
 
     loadGames()
@@ -81,8 +84,14 @@ const Games = ({ user }) => {
 
   return <div>
     <Typography variant='h6'>My Games</Typography>
+    {loading && <Typography variant='body1'>Loading...</Typography>}
     {games &&
       <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Name</TableCell>
+          </TableRow>
+        </TableHead>
         <TableBody>
           {games.map(game => (
             <TableRow key={game.id} hover={true}>
