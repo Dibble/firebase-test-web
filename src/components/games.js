@@ -84,25 +84,25 @@ const Games = ({ user }) => {
 
   return <div>
     <Typography variant='h6'>My Games</Typography>
-    {loading && <Typography variant='body1'>Loading...</Typography>}
-    {games &&
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Players</TableCell>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell>Name</TableCell>
+          <TableCell>Players</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {loading && <TableRow>
+          <TableCell align='center' colSpan={2}>Loading...</TableCell>
+        </TableRow>}
+        {games && games.map(game => (
+          <TableRow key={game.id} hover={true}>
+            <TableCell>{game.name}</TableCell>
+            <TableCell>{game.players.length}</TableCell>
           </TableRow>
-        </TableHead>
-        <TableBody>
-          {games.map(game => (
-            <TableRow key={game.id} hover={true}>
-              <TableCell>{game.name}</TableCell>
-              <TableCell>{game.players.length}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    }
+        ))}
+      </TableBody>
+    </Table>
     <Button onClick={onCreateGame}>Create New Game</Button>
     <input type='text' id='newGameName' placeholder='New Game Name'></input>
     <Button onClick={onJoinGame}>Join Game</Button>
