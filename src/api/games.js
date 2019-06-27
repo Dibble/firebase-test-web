@@ -69,3 +69,23 @@ export const getGameDetail = async (user, gameID) => {
   console.error('getGameDetail failed', result.status, await result.text())
   return null
 }
+
+export const assignCountries = async (user, gameID) => {
+  let body = JSON.stringify({ gameID })
+  let headers = new Headers({
+    'Authorization': `Bearer ${await user.getIdToken()}`,
+    'Content-Type': 'application/json'
+  })
+  let result = await fetch(`https://europe-west2-test-project-352b6.cloudfunctions.net/assignCountries`, {
+    method: 'POST',
+    headers,
+    body
+  })
+
+  if (result.status === 200) {
+    return await result.json()
+  }
+
+  console.error('getGameDetail failed', result.status, await result.text())
+  return null
+}

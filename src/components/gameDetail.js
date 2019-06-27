@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Button, Icon, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { getGameDetail, joinGame } from '../api/games'
+import { getGameDetail, joinGame, assignCountries } from '../api/games'
 
 const useStyles = makeStyles(theme => ({
   button: {
-    margin: theme.spacing(1)
+    margin: theme.spacing(1),
+    padding: theme.spacing(1)
   },
   userEmail: {
     color: 'gray'
@@ -37,6 +38,11 @@ const GameDetail = ({ gameId, user }) => {
     if (joinedGame) setGame(joinedGame)
   }
 
+  const onAssignCountries = async () => {
+    let updatedGame = await assignCountries(user, gameId)
+    if (updatedGame) setGame(updatedGame)
+  }
+
   return <div>
     <Button variant='contained' color='secondary' className={classes.button} onClick={backToMyGames}>
       <Icon>arrow_back</Icon>
@@ -65,6 +71,11 @@ const GameDetail = ({ gameId, user }) => {
         <Button variant='contained' color='secondary' className={classes.button} onClick={onJoinGame}>
           <Icon>add</Icon>
           Join Game
+        </Button>}
+      {game.players.length === 7 &&
+        <Button variant='contained' color='secondary' className={classes.button} onClick={onAssignCountries}>
+          <Icon>language</Icon>
+          Assign Countries
         </Button>}
     </div>}
   </div>
