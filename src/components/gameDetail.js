@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Chip, Divider, Grid, Icon, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
+import { Button, Chip, Grid, Icon, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { getGameDetail, joinGame, assignCountries } from '../api/games'
+import { getGameDetail, joinGame, assignCountries, startGame } from '../api/games'
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -47,7 +47,8 @@ const GameDetail = ({ gameId, user }) => {
   }
 
   const onStartGame = async () => {
-    console.log('started game')
+    let updatedGame = await startGame(user, gameId)
+    if (updatedGame) setGame(updatedGame)
   }
 
   const getGameStateIcon = (gameState) => {
@@ -105,6 +106,11 @@ const GameDetail = ({ gameId, user }) => {
                 <Icon>play_arrow</Icon>
                 Start Game
               </Button>
+            </Grid>
+          }
+          {game.currentState === 'Active' &&
+            <Grid item>
+              <Typography variant='h6' className={classes.title}>Current Round: {game.currentRound}</Typography>
             </Grid>
           }
         </Grid>
