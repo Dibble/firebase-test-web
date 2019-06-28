@@ -11,6 +11,36 @@ const useStyles = makeStyles(theme => ({
   chip: {
     margin: theme.spacing(1)
   },
+  chipRed: {
+    margin: theme.spacing(1),
+    backgroundColor: '#e01c00'
+  },
+  chipDarkBlue: {
+    margin: theme.spacing(1),
+    backgroundColor: '#0062c6',
+    color: 'white'
+  },
+  chipLightBlue: {
+    margin: theme.spacing(1),
+    backgroundColor: '#00b2d4'
+  },
+  chipBlack: {
+    margin: theme.spacing(1),
+    backgroundColor: 'black',
+    color: 'white'
+  },
+  chipGreen: {
+    margin: theme.spacing(1),
+    backgroundColor: '#019a01'
+  },
+  chipWhite: {
+    margin: theme.spacing(1),
+    backgroundColor: 'white'
+  },
+  chipYellow: {
+    margin: theme.spacing(1),
+    backgroundColor: '#ffcf00'
+  },
   userEmail: {
     color: 'gray'
   },
@@ -65,6 +95,27 @@ const GameDetail = ({ gameId, user }) => {
         return 'check_circle'
       case 'Complete':
         return 'flag'
+    }
+  }
+
+  const getCountryColor = (country) => {
+    switch (country) {
+      case 'Austria':
+        return classes.chipRed
+      case 'England':
+        return classes.chipDarkBlue
+      case 'France':
+        return classes.chipLightBlue
+      case 'Germany':
+        return classes.chipBlack
+      case 'Italy':
+        return classes.chipGreen
+      case 'Russia':
+        return classes.chipWhite
+      case 'Turkey':
+        return classes.chipYellow
+      default:
+        return classes.chip
     }
   }
 
@@ -132,9 +183,9 @@ const GameDetail = ({ gameId, user }) => {
           </TableHead>
           <TableBody>
             {game.players.map((player) =>
-              <TableRow key={player.id} selected={player.userUID === user.uid}>
+              <TableRow key={player.id} selected={player.userUID === user.uid} hover>
                 <TableCell>{player.name}{player.email ? <small className={classes.userEmail}>{` (${player.email})`}</small> : ''}</TableCell>
-                <TableCell>{player.country ? player.country : 'Not Assigned'}</TableCell>
+                <TableCell><Chip variant={player.country === 'Russia' ? 'outlined' : 'default'} className={getCountryColor(player.country)} label={player.country ? player.country : 'Not Assigned'} /></TableCell>
               </TableRow>)}
           </TableBody>
         </Table>
