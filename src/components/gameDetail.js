@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Icon, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
+import { Button, Chip, Divider, Grid, Icon, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { getGameDetail, joinGame, assignCountries } from '../api/games'
 
@@ -7,6 +7,9 @@ const useStyles = makeStyles(theme => ({
   button: {
     margin: theme.spacing(1),
     padding: theme.spacing(1)
+  },
+  chip: {
+    margin: theme.spacing(1)
   },
   userEmail: {
     color: 'gray'
@@ -44,40 +47,55 @@ const GameDetail = ({ gameId, user }) => {
   }
 
   return <div>
-    <Button variant='contained' color='secondary' className={classes.button} onClick={backToMyGames}>
+    <Button variant='text' color='primary' className={classes.button} onClick={backToMyGames}>
       <Icon>arrow_back</Icon>
       Back to My Games
     </Button>
     {!game && <Typography variant='body1' className={classes.title}>Loading...</Typography>}
-    {game && <div>
-      <Typography variant='h5' className={classes.title}>{game.name}</Typography>
-      <Typography variant='h6' className={classes.title}>Players {game.players.length}/7</Typography>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Country</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {game.players.map((player) =>
-            <TableRow key={player.id}>
-              <TableCell>{player.name}{player.email ? <small className={classes.userEmail}>{` (${player.email})`}</small> : ''}</TableCell>
-              <TableCell>{player.country ? player.country : 'Not Assigned'}</TableCell>
-            </TableRow>)}
-        </TableBody>
-      </Table>
+    {game && <Grid container direction='column' justify='center' alignItems='stretch'>
+      <Grid container direction='row' justify='flex-start' alignItems='center'>
+        <Grid item>
+          <Typography variant='h5' className={classes.title}>{game.name}</Typography>
+        </Grid>
+        <Grid item>
+          <Chip className={classes.chip} label={`${game.players.length}/7 Players`} icon={<Icon>face</Icon>} />
+        </Grid>
+        <Grid item>
+          <Chip className={classes.chip} label={game.currentState} icon={<Icon>check_circle</Icon>} />
+        </Grid>
+      </Grid>
+      <Grid item>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Country</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {game.players.map((player) =>
+              <TableRow key={player.id}>
+                <TableCell>{player.name}{player.email ? <small className={classes.userEmail}>{` (${player.email})`}</small> : ''}</TableCell>
+                <TableCell>{player.country ? player.country : 'Not Assigned'}</TableCell>
+              </TableRow>)}
+          </TableBody>
+        </Table>
+      </Grid>
       {game.players.length < 7 && !game.players.some((player) => player.userUID === user.uid) &&
-        <Button variant='contained' color='secondary' className={classes.button} onClick={onJoinGame}>
-          <Icon>add</Icon>
-          Join Game
-        </Button>}
+        <Grid item>
+          <Button variant='contained' color='secondary' className={classes.button} onClick={onJoinGame}>
+            <Icon>add</Icon>
+            Join Game
+        </Button>
+        </Grid>}
       {game.players.length === 7 && !game.players.some((player) => player.country) &&
-        < Button variant='contained' color='secondary' className={classes.button} onClick={onAssignCountries}>
-          <Icon>language</Icon>
-          Assign Countries
-        </Button>}
-    </div>
+        <Grid item>
+          < Button variant='contained' color='secondary' className={classes.button} onClick={onAssignCountries}>
+            <Icon>language</Icon>
+            Assign Countries
+        </Button>
+        </Grid>}
+    </Grid>
     }
   </div >
 }
