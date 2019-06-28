@@ -51,6 +51,10 @@ const GameDetail = ({ gameId, user }) => {
     if (updatedGame) setGame(updatedGame)
   }
 
+  const onViewOrders = async () => {
+    window.location = `${window.location}/orders`
+  }
+
   const getGameStateIcon = (gameState) => {
     switch (gameState) {
       case 'Setup':
@@ -116,6 +120,9 @@ const GameDetail = ({ gameId, user }) => {
         </Grid>
       </Grid>
       <Grid item>
+        <Button onClick={onViewOrders}>Submit Orders</Button>
+      </Grid>
+      <Grid item>
         <Table>
           <TableHead>
             <TableRow>
@@ -125,7 +132,7 @@ const GameDetail = ({ gameId, user }) => {
           </TableHead>
           <TableBody>
             {game.players.map((player) =>
-              <TableRow key={player.id}>
+              <TableRow key={player.id} selected={player.userUID === user.uid}>
                 <TableCell>{player.name}{player.email ? <small className={classes.userEmail}>{` (${player.email})`}</small> : ''}</TableCell>
                 <TableCell>{player.country ? player.country : 'Not Assigned'}</TableCell>
               </TableRow>)}

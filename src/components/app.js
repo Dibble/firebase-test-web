@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 import Auth from './auth'
 import Games from './games'
 import GameDetail from './gameDetail'
+import OrderDetail from './orderDetail'
 
 import { AppBar, Toolbar, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -34,8 +35,11 @@ const App = () => {
         <Route exact path="/" render={() => (
           <Games user={user} />
         )} />
-        <Route path="/game/:gameId" render={({ match }) => (
+        <Route exact path="/game/:gameId" render={({ match }) => (
           <GameDetail user={user} gameId={match.params.gameId} />
+        )} />
+        <Route exact path="/game/:gameId/orders" render={({ match }) => (
+          <OrderDetail user={user} gameId={match.params.gameId} />
         )} />
       </div>}
     </div>
