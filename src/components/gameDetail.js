@@ -46,6 +46,23 @@ const GameDetail = ({ gameId, user }) => {
     if (updatedGame) setGame(updatedGame)
   }
 
+  const onStartGame = async () => {
+    console.log('started game')
+  }
+
+  const getGameStateIcon = (gameState) => {
+    switch (gameState) {
+      case 'Setup':
+        return 'assignment'
+      case 'Countries Assigned':
+        return 'language'
+      case 'Active':
+        return 'check_circle'
+      case 'Complete':
+        return 'flag'
+    }
+  }
+
   return <div>
     <Button variant='text' color='primary' className={classes.button} onClick={backToMyGames}>
       <Icon>arrow_back</Icon>
@@ -53,15 +70,43 @@ const GameDetail = ({ gameId, user }) => {
     </Button>
     {!game && <Typography variant='body1' className={classes.title}>Loading...</Typography>}
     {game && <Grid container direction='column' justify='center' alignItems='stretch'>
-      <Grid container direction='row' justify='flex-start' alignItems='center'>
-        <Grid item>
-          <Typography variant='h5' className={classes.title}>{game.name}</Typography>
+      <Grid container direction='row' justify='space-between' alignItems='center'>
+        <Grid container item direction='row' justify='flex-start' alignItems='center'>
+          <Grid item>
+            <Typography variant='h5' className={classes.title}>{game.name}</Typography>
+          </Grid>
+          <Grid item>
+            <Chip className={classes.chip} label={`${game.players.length}/7 Players`} icon={<Icon>face</Icon>} />
+          </Grid>
+          <Grid item>
+            <Chip className={classes.chip} label={game.currentState} icon={<Icon>{getGameStateIcon(game.currentState)}</Icon>} />
+          </Grid>
         </Grid>
-        <Grid item>
-          <Chip className={classes.chip} label={`${game.players.length}/7 Players`} icon={<Icon>face</Icon>} />
-        </Grid>
-        <Grid item>
-          <Chip className={classes.chip} label={game.currentState} icon={<Icon>check_circle</Icon>} />
+        <Grid container direction='row' justify='flex-end' alignItems='center'>
+          {game.currentState === 'Setup' && !game.players.some((player) => player.userUID === user.uid) &&
+            <Grid item>
+              <Button variant='contained' color='secondary' className={classes.button} onClick={onJoinGame}>
+                <Icon>add</Icon>
+                Join Game
+              </Button>
+            </Grid>
+          }
+          {game.currentState === 'Setup' && game.players.length === 7 &&
+            <Grid item>
+              <Button variant='contained' color='secondary' className={classes.button} onClick={onAssignCountries}>
+                <Icon>language</Icon>
+                Assign Countries
+              </Button>
+            </Grid>
+          }
+          {game.currentState === 'Countries Assigned' &&
+            <Grid item>
+              <Button variant='contained' color='secondary' className={classes.button} onClick={onStartGame}>
+                <Icon>play_arrow</Icon>
+                Start Game
+              </Button>
+            </Grid>
+          }
         </Grid>
       </Grid>
       <Grid item>
@@ -81,20 +126,6 @@ const GameDetail = ({ gameId, user }) => {
           </TableBody>
         </Table>
       </Grid>
-      {game.players.length < 7 && !game.players.some((player) => player.userUID === user.uid) &&
-        <Grid item>
-          <Button variant='contained' color='secondary' className={classes.button} onClick={onJoinGame}>
-            <Icon>add</Icon>
-            Join Game
-        </Button>
-        </Grid>}
-      {game.players.length === 7 && !game.players.some((player) => player.country) &&
-        <Grid item>
-          < Button variant='contained' color='secondary' className={classes.button} onClick={onAssignCountries}>
-            <Icon>language</Icon>
-            Assign Countries
-        </Button>
-        </Grid>}
     </Grid>
     }
   </div >
