@@ -1,4 +1,4 @@
-import React, { useState, useeffect, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@material-ui/core'
 import { getGameDetail } from '../api/games'
 
@@ -20,8 +20,9 @@ const OrderDetail = ({ user, gameId }) => {
   return <div>
     <Button onClick={goBackToGame}>Go Back</Button>
     <p>Order Detail</p>
-    <p>user: {user.displayName}</p>
-    <p>gameId: {gameId}</p>
+    {game && game.players.filter((player) => player.userUID === user.uid).length === 1 && game.players.filter((player) => player.userUID === user.uid)[0].units.map((unit, idx) => (
+      <p key={idx}>{unit.type} - {unit.location}</p>
+    ))}
   </div>
 }
 
