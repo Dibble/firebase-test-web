@@ -72,13 +72,14 @@ const GameDetail = ({ gameId, user }) => {
           <Icon>add</Icon>
           Join Game
         </Button>}
-      {game.players.length === 7 &&
-        <Button variant='contained' color='secondary' className={classes.button} onClick={onAssignCountries}>
+      {game.players.length === 7 && !game.players.some((player) => player.country) &&
+        < Button variant='contained' color='secondary' className={classes.button} onClick={onAssignCountries}>
           <Icon>language</Icon>
           Assign Countries
         </Button>}
-    </div>}
-  </div>
+    </div>
+    }
+  </div >
 }
 
 export default GameDetail
