@@ -35,14 +35,6 @@ const Auth = ({ user, setUser }) => {
     })
   }, [])
 
-  useEffect(() => {
-    async function tryGetRedirectResult () {
-      await firebase.auth().getRedirectResult()
-    }
-
-    tryGetRedirectResult()
-  }, [])
-
   const signInWithGoogle = () => {
     const provider = new firebase.auth.GoogleAuthProvider()
     firebase.auth().signInWithRedirect(provider)
