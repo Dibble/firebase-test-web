@@ -2,12 +2,18 @@ export const getAccessibleProvinces = (selectedUnit, units) => {
   let accessibleProvinces = adjacentProvinces[selectedUnit.location]
 
   if (selectedUnit.type === 'F') {
-    return accessibleProvinces.filter((province) => provinceType[province] === 'Coastal' || provinceType[province] === 'Water')
+    return accessibleProvinces
+      .filter((province) => provinceType[province] === 'Coastal' || provinceType[province] === 'Water')
+      .map((province) => ({ location: province, requiresConvoy: false }))
   }
 
   let directMoves = accessibleProvinces.filter((province) => provinceType[province] === 'Coastal' || provinceType[province] === 'Inland')
-  let convoyMoves = getProvincesReachableByConvoy(selectedUnit, units).filter((province) => !directMoves.includes(province))
-  return directMoves.concat(convoyMoves)
+  let convoyMoves = getProvincesReachableByConvoy(selectedUnit, units).filter((province) => province !== selectedUnit.location && !directMoves.includes(province))
+
+  return directMoves
+    .map((province) => ({ location: province, requiresConvoy: false }))
+    .concat(convoyMoves
+      .map((province) => ({ location: province, requiresConvoy: true })))
 }
 
 const getProvincesReachableByConvoy = (selectedUnit, units, exploredProvinces = []) => {

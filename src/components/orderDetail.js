@@ -1,9 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import { Button, FormControl, Input, InputLabel, MenuItem, Select } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
 import { getGameDetail } from '../api/games'
 import { getAccessibleProvinces } from '../diplomacy/orders'
 
+const useStyles = makeStyles(theme => ({
+  orderTypeSelect: {
+    width: '90px'
+  },
+  orderDetailSelect: {
+    width: '200px'
+  }
+}))
+
 const OrderDetail = ({ user, gameId }) => {
+  const classes = useStyles()
+
   const [units, setUnits] = useState(null)
   const [orders, setOrders] = useState([])
 
@@ -44,7 +56,7 @@ const OrderDetail = ({ user, gameId }) => {
         <p>{unit.type} - {unit.location}</p>
         <FormControl>
           <InputLabel htmlFor={`orderType${idx}`}>Order</InputLabel>
-          <Select autoWidth onChange={handleOrderTypeChange(idx)} value={orders[idx].type} input={<Input name={'orderType'} id={`orderType${idx}`}></Input>}>
+          <Select className={classes.orderTypeSelect} onChange={handleOrderTypeChange(idx)} value={orders[idx].type} input={<Input name={'orderType'} id={`orderType${idx}`}></Input>}>
             <MenuItem value='Hold'>Hold</MenuItem>
             <MenuItem value='Move'>Move</MenuItem>
             <MenuItem value='Support'>Support</MenuItem>
@@ -53,8 +65,10 @@ const OrderDetail = ({ user, gameId }) => {
         </FormControl>
         {orders[idx].type === 'Move' && <FormControl>
           <InputLabel htmlFor={`orderDetail${idx}`}>Province</InputLabel>
-          <Select autoWidth onChange={handleOrderDetailChange(idx)} value={orders[idx].detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
-            {getAccessibleProvinces(unit, units).map((province) => <MenuItem key={province} value={province}>{province}</MenuItem>)}
+          <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={orders[idx].detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
+            {getAccessibleProvinces(unit, units).map((province) =>
+              <MenuItem key={province.location} value={province.location}>{`${province.location}${province.requiresConvoy ? ' (requires convoy)' : ''}`}</MenuItem>
+            )}
           </Select>
         </FormControl>}
       </div>
