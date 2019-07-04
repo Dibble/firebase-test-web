@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Button, FormControl, Grid, Input, InputLabel, MenuItem, Select, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { getGameDetail } from '../api/games'
-import { getAccessibleProvinces, getSupportableUnits } from '../diplomacy/orders'
+import { getAccessibleProvinces, getMovingUnits, getSupportableUnits } from '../diplomacy/orders'
 
 const useStyles = makeStyles(theme => ({
   orderTypeSelect: {
@@ -90,6 +90,18 @@ const OrderDetail = ({ user, gameId }) => {
                 <InputLabel htmlFor={`orderDetail${idx}`}>Unit</InputLabel>
                 <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={orders[idx].detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
                   {getSupportableUnits(unit, units, orders).map((unit) =>
+                    <MenuItem key={unit.location} value={unit.location}>{`${unit.type} ${unit.location} - ${unit.destination}`}</MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+            </Grid>
+          }
+          {orders[idx].type === 'Convoy' &&
+            <Grid item className={classes.orderElement}>
+              <FormControl>
+                <InputLabel htmlFor={`orderDetail${idx}`}>Unit</InputLabel>
+                <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={orders[idx].detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
+                  {getMovingUnits(units, orders).map((unit) =>
                     <MenuItem key={unit.location} value={unit.location}>{`${unit.type} ${unit.location} - ${unit.destination}`}</MenuItem>
                   )}
                 </Select>

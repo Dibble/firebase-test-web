@@ -16,6 +16,18 @@ export const getAccessibleProvinces = (selectedUnit, units) => {
       .map((province) => ({ location: province, requiresConvoy: true })))
 }
 
+export const getMovingUnits = (units, orders) => {
+  return units
+    .map((unit, idx) => {
+      return {
+        location: unit.location,
+        type: unit.type,
+        destination: orders[idx].type === 'Hold' ? 'HOLD' : orders[idx].type === 'Move' ? orders[idx].detail : 'unknown'
+      }
+    })
+    .filter((unit, idx) => orders[idx].type === 'Move')
+}
+
 export const getSupportableUnits = (selectedUnit, units, orders) => {
   return units
     .map((unit, idx) => {
