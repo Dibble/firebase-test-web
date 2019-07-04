@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button, FormControl, Input, InputLabel, MenuItem, Select } from '@material-ui/core'
+import { Button, FormControl, Grid, Input, InputLabel, MenuItem, Select, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { getGameDetail } from '../api/games'
 import { getAccessibleProvinces } from '../diplomacy/orders'
@@ -10,6 +10,12 @@ const useStyles = makeStyles(theme => ({
   },
   orderDetailSelect: {
     width: '200px'
+  },
+  orderElement: {
+    margin: theme.spacing(1)
+  },
+  unit: {
+    margin: theme.spacing(2)
   }
 }))
 
@@ -50,27 +56,35 @@ const OrderDetail = ({ user, gameId }) => {
 
   return <div>
     <Button onClick={goBackToGame}>Go Back</Button>
-    <p>Order Detail</p>
+    <Typography variant='h6'>Orders</Typography>
     {units && units.map((unit, idx) => (
-      <div key={idx}>
-        <p>{unit.type} - {unit.location}</p>
-        <FormControl>
-          <InputLabel htmlFor={`orderType${idx}`}>Order</InputLabel>
-          <Select className={classes.orderTypeSelect} onChange={handleOrderTypeChange(idx)} value={orders[idx].type} input={<Input name={'orderType'} id={`orderType${idx}`}></Input>}>
-            <MenuItem value='Hold'>Hold</MenuItem>
-            <MenuItem value='Move'>Move</MenuItem>
-            <MenuItem value='Support'>Support</MenuItem>
-            <MenuItem value='Convoy'>Convoy</MenuItem>
-          </Select>
-        </FormControl>
-        {orders[idx].type === 'Move' && <FormControl>
-          <InputLabel htmlFor={`orderDetail${idx}`}>Province</InputLabel>
-          <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={orders[idx].detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
-            {getAccessibleProvinces(unit, units).map((province) =>
-              <MenuItem key={province.location} value={province.location}>{`${province.location}${province.requiresConvoy ? ' (requires convoy)' : ''}`}</MenuItem>
-            )}
-          </Select>
-        </FormControl>}
+      <div key={idx} className={classes.unit}>
+        <Typography variant='body1'>{unit.type} - {unit.location}</Typography>
+        <Grid container direction='row' alignItems='center' key={idx}>
+          <Grid item className={classes.orderElement}>
+            <FormControl>
+              <InputLabel htmlFor={`orderType${idx}`}>Order</InputLabel>
+              <Select className={classes.orderTypeSelect} onChange={handleOrderTypeChange(idx)} value={orders[idx].type} input={<Input name={'orderType'} id={`orderType${idx}`}></Input>}>
+                <MenuItem value='Hold'>Hold</MenuItem>
+                <MenuItem value='Move'>Move</MenuItem>
+                <MenuItem value='Support'>Support</MenuItem>
+                <MenuItem value='Convoy'>Convoy</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          {orders[idx].type === 'Move' &&
+            <Grid item className={classes.orderElement}>
+              <FormControl>
+                <InputLabel htmlFor={`orderDetail${idx}`}>Province</InputLabel>
+                <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={orders[idx].detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
+                  {getAccessibleProvinces(unit, units).map((province) =>
+                    <MenuItem key={province.location} value={province.location}>{`${province.location}${province.requiresConvoy ? ' (requires convoy)' : ''}`}</MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+            </Grid>
+          }
+        </Grid>
       </div>
     ))}
   </div>
