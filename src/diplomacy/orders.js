@@ -16,6 +16,25 @@ export const getAccessibleProvinces = (selectedUnit, units) => {
       .map((province) => ({ location: province, requiresConvoy: true })))
 }
 
+export const getSupportableUnits = (selectedUnit, units, orders) => {
+  return units
+    .map((unit, idx) => {
+      return {
+        location: unit.location,
+        type: unit.type,
+        destination: orders[idx].type === 'Hold' ? 'HOLD' : orders[idx].type === 'Move' ? orders[idx].detail : 'unknown'
+      }
+    })
+    .filter((unit, idx) => {
+      let unitOrder = orders[idx]
+
+      if (unitOrder.type === 'Hold' && adjacentProvinces[selectedUnit.location].includes(unit.location)) return true
+      if (unitOrder.type === 'Move' && adjacentProvinces[selectedUnit.location].includes(unitOrder.detail)) return true
+
+      return false
+    })
+}
+
 const getProvincesReachableByConvoy = (selectedUnit, units, exploredProvinces = []) => {
   let adjacentCoast = adjacentProvinces[selectedUnit.location].filter((province) => provinceType[province] === 'Coastal')
   let adjacentFleets = units.filter((unit) => unit.type === 'F' && adjacentProvinces[selectedUnit.location].includes(unit.location))
