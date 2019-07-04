@@ -54,7 +54,7 @@ const OrderDetail = ({ user, gameId }) => {
         {orders[idx].type === 'Move' && <FormControl>
           <InputLabel htmlFor={`orderDetail${idx}`}>Province</InputLabel>
           <Select autoWidth onChange={handleOrderDetailChange(idx)} value={orders[idx].detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
-            {getAccessibleProvinces(unit).map((province) => <MenuItem key={province} value={province}>{province}</MenuItem>)}
+            {getAccessibleProvinces(unit, units).map((province) => <MenuItem key={province} value={province}>{province}</MenuItem>)}
           </Select>
         </FormControl>}
       </div>
