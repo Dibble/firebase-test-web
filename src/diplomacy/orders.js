@@ -1,14 +1,16 @@
-export const getAccessibleProvinces = (selectedUnit, units) => {
-  let accessibleProvinces = adjacentProvinces[selectedUnit.location]
+export const getAccessibleProvinces = (selectedUnit, orders) => {
+  const unit = parseUnit(selectedUnit)
+  let accessibleProvinces = adjacentProvinces[unit.location]
 
-  if (selectedUnit.type === 'F') {
+  if (unit.type === 'F') {
     return accessibleProvinces
       .filter((province) => provinceType[province] === 'Coastal' || provinceType[province] === 'Water')
       .map((province) => ({ location: province, requiresConvoy: false }))
   }
 
   let directMoves = accessibleProvinces.filter((province) => provinceType[province] === 'Coastal' || provinceType[province] === 'Inland')
-  let convoyMoves = getProvincesReachableByConvoy(selectedUnit, units).filter((province) => province !== selectedUnit.location && !directMoves.includes(province))
+  let convoyMoves = getProvincesReachableByConvoy(selectedUnit, orders.map((order) => order.unit))
+    .filter((province) => province !== unit.location && !directMoves.includes(province))
 
   return directMoves
     .map((province) => ({ location: province, requiresConvoy: false }))
@@ -16,44 +18,60 @@ export const getAccessibleProvinces = (selectedUnit, units) => {
       .map((province) => ({ location: province, requiresConvoy: true })))
 }
 
-export const getMovingUnits = (units, orders) => {
-  return units
-    .map((unit, idx) => {
-      return {
-        location: unit.location,
-        type: unit.type,
-        destination: orders[idx].type === 'Hold' ? 'HOLD' : orders[idx].type === 'Move' ? orders[idx].detail : 'unknown'
+export const getMovingUnits = (orders) => orders.filter((order) => order.type === 'Move').map((order) => ({ name: order.unit, destination: order.detail }))
+
+export const getSupportableUnits = (unit, orders) => {
+  const { location } = parseUnit(unit)
+  return orders
+    .filter((order) => {
+      const orderUnit = parseUnit(order.unit)
+
+      switch (order.type) {
+        case 'Hold':
+        case 'Convoy':
+          return adjacentProvinces[location].includes(orderUnit.location)
+        case 'Move':
+          return adjacentProvinces[location].includes(order.detail)
+        default:
+          return false
       }
     })
-    .filter((unit, idx) => orders[idx].type === 'Move')
-}
-
-export const getSupportableUnits = (selectedUnit, units, orders) => {
-  return units
-    .map((unit, idx) => {
-      return {
-        location: unit.location,
-        type: unit.type,
-        destination: orders[idx].type === 'Hold' ? 'HOLD' : orders[idx].type === 'Move' ? orders[idx].detail : 'unknown'
+    .map((order) => {
+      switch (order.type) {
+        case 'Move':
+          return {
+            name: order.unit,
+            detail: order.detail
+          }
+        case 'Hold':
+          return {
+            name: order.unit,
+            detail: 'Hold'
+          }
+        case 'Convoy':
+          return {
+            name: order.unit,
+            detail: `Convoy ${order.detail}`
+          }
       }
     })
-    .filter((unit, idx) => {
-      let unitOrder = orders[idx]
-
-      if (unitOrder.type === 'Hold' && adjacentProvinces[selectedUnit.location].includes(unit.location)) return true
-      if (unitOrder.type === 'Move' && adjacentProvinces[selectedUnit.location].includes(unitOrder.detail)) return true
-
-      return false
-    })
 }
 
-const getProvincesReachableByConvoy = (selectedUnit, units, exploredProvinces = []) => {
+const getProvincesReachableByConvoy = (unitToConvoy, units, exploredProvinces = []) => {
+  const selectedUnit = parseUnit(unitToConvoy)
+
   let adjacentCoast = adjacentProvinces[selectedUnit.location].filter((province) => provinceType[province] === 'Coastal')
-  let adjacentFleets = units.filter((unit) => unit.type === 'F' && adjacentProvinces[selectedUnit.location].includes(unit.location))
-  let adjacentFleetsToExplore = adjacentFleets.filter((fleet) => !exploredProvinces.includes(fleet.location))
+  let adjacentFleets = units
+    .filter((unit) => {
+      const { type, location } = parseUnit(unit)
+      return type === 'F' && adjacentProvinces[selectedUnit.location].includes(location)
+    })
+  let adjacentFleetsToExplore = adjacentFleets.filter((fleet) => {
+    const { location } = parseUnit(fleet)
+    return !exploredProvinces.includes(location)
+  })
 
   if (adjacentFleetsToExplore.length === 0) return adjacentCoast
-
   adjacentProvinces[selectedUnit.location].forEach((province) => {
     if (!exploredProvinces.includes(province)) exploredProvinces.push(province)
   })
@@ -61,6 +79,8 @@ const getProvincesReachableByConvoy = (selectedUnit, units, exploredProvinces = 
   let coastAdjacentToFleets = adjacentFleetsToExplore.map((fleet) => getProvincesReachableByConvoy(fleet, units, exploredProvinces)).flat()
   return [...new Set(adjacentCoast.concat(coastAdjacentToFleets))]
 }
+
+const parseUnit = (unitString) => ({ type: unitString.slice(0, 1), location: unitString.slice(2) })
 
 const provinceType = {
   'Bohemia': 'Inland',

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Button, FormControl, Grid, Input, InputLabel, MenuItem, Select, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { getGameDetail } from '../api/games'
+import { getOrderDetail, submitOrders } from '../api/orders'
 import { getAccessibleProvinces, getMovingUnits, getSupportableUnits } from '../diplomacy/orders'
 
 const useStyles = makeStyles(theme => ({
@@ -22,20 +22,20 @@ const useStyles = makeStyles(theme => ({
 const OrderDetail = ({ user, gameId }) => {
   const classes = useStyles()
 
+  const [round, setRound] = useState(null)
+  const [country, setCountry] = useState(null)
   const [units, setUnits] = useState(null)
   const [orders, setOrders] = useState([])
 
   useEffect(() => {
-    async function loadGame () {
-      let gameDetail = await getGameDetail(user, gameId)
-      if (gameDetail && gameDetail.players.filter((player) => player.userUID === user.uid).length === 1) {
-        let playerUnits = gameDetail.players.filter((player) => player.userUID === user.uid)[0].units
-        setOrders(Array(playerUnits.length).fill({ type: 'Hold', detail: '' }))
-        setUnits(playerUnits)
+    async function loadOrders () {
+      let orderDetail = await getOrderDetail(user, gameId)
+      if (orderDetail) {
+        setOrders(orderDetail)
       }
     }
 
-    loadGame()
+    loadOrders()
   }, [])
 
   const goBackToGame = () => {
@@ -54,55 +54,68 @@ const OrderDetail = ({ user, gameId }) => {
     setOrders(newOrders)
   }
 
+  const onSubmitOrders = async () => {
+    let myOrders = {}
+    myOrders[country] = units.map((unit, idx) => ({
+      unit: `${unit.type} ${unit.location}`,
+      type: orders[idx].type,
+      detail: orders[idx].detail,
+    }))
+
+    await submitOrders(user, gameId, round, myOrders)
+  }
+
   return <div>
     <Button onClick={goBackToGame}>Go Back</Button>
-    <Typography variant='h6'>Orders</Typography>
-    {units && units.map((unit, idx) => (
+    <Typography variant='h6'>Orders {country ? country : ''} {round ? round : ''}</Typography>
+    {orders && orders.map((order, idx) => (
       <div key={idx} className={classes.unit}>
-        <Typography variant='body1'>{unit.type} - {unit.location}</Typography>
-        <Grid container direction='row' alignItems='center' key={idx}>
+        <Typography variant='body1'>{order.unit}</Typography>
+        <Grid container direction='row' alignItems='center'>
           <Grid item className={classes.orderElement}>
             <FormControl>
               <InputLabel htmlFor={`orderType${idx}`}>Order</InputLabel>
-              <Select className={classes.orderTypeSelect} onChange={handleOrderTypeChange(idx)} value={orders[idx].type} input={<Input name={'orderType'} id={`orderType${idx}`}></Input>}>
+              <Select className={classes.orderTypeSelect} onChange={handleOrderTypeChange(idx)} value={order.type} input={<Input name={'orderType'} id={`orderType${idx}`}></Input>}>
                 <MenuItem value='Hold'>Hold</MenuItem>
                 <MenuItem value='Move'>Move</MenuItem>
                 <MenuItem value='Support'>Support</MenuItem>
-                {unit.type === 'F' && <MenuItem value='Convoy'>Convoy</MenuItem>}
+                {order.unit.startsWith('F') && <MenuItem value='Convoy'>Convoy</MenuItem>}
               </Select>
             </FormControl>
           </Grid>
-          {orders[idx].type === 'Move' &&
+          {order.type === 'Move' &&
             <Grid item className={classes.orderElement}>
               <FormControl>
                 <InputLabel htmlFor={`orderDetail${idx}`}>Province</InputLabel>
-                <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={orders[idx].detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
-                  {getAccessibleProvinces(unit, units).map((province) =>
+                <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={order.detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
+                  {getAccessibleProvinces(order.unit, orders).map((province) =>
                     <MenuItem key={province.location} value={province.location}>{`${province.location}${province.requiresConvoy ? ' (requires convoy)' : ''}`}</MenuItem>
                   )}
                 </Select>
               </FormControl>
             </Grid>
           }
-          {orders[idx].type === 'Support' &&
+          {order.type === 'Support' &&
             <Grid item className={classes.orderElement}>
               <FormControl>
                 <InputLabel htmlFor={`orderDetail${idx}`}>Unit</InputLabel>
-                <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={orders[idx].detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
-                  {getSupportableUnits(unit, units, orders).map((unit) =>
-                    <MenuItem key={unit.location} value={unit.location}>{`${unit.type} ${unit.location} - ${unit.destination}`}</MenuItem>
+                <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={order.detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
+                  {getSupportableUnits(order.unit, orders).map((unit) =>
+                    <MenuItem key={unit.name} value={unit.name}>{`${unit.name} - ${unit.detail}`}</MenuItem>
                   )}
                 </Select>
               </FormControl>
             </Grid>
           }
-          {orders[idx].type === 'Convoy' &&
+          {order.type === 'Convoy' &&
             <Grid item className={classes.orderElement}>
               <FormControl>
                 <InputLabel htmlFor={`orderDetail${idx}`}>Unit</InputLabel>
-                <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={orders[idx].detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
-                  {getMovingUnits(units, orders).map((unit) =>
-                    <MenuItem key={unit.location} value={unit.location}>{`${unit.type} ${unit.location} - ${unit.destination}`}</MenuItem>
+                <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={order.detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
+                  {getMovingUnits(orders).map((unit) => {
+                    const convoy = `${unit.name} - ${unit.destination}`
+                    return <MenuItem key={unit.name} value={convoy}>{convoy}</MenuItem>
+                  }
                   )}
                 </Select>
               </FormControl>
@@ -111,6 +124,9 @@ const OrderDetail = ({ user, gameId }) => {
         </Grid>
       </div>
     ))}
+    {units &&
+      <Button onClick={onSubmitOrders}>Submit Orders</Button>
+    }
   </div>
 }
 
