@@ -25,6 +25,7 @@ const OrderDetail = ({ user, gameId }) => {
   const [round, setRound] = useState(null)
   const [country, setCountry] = useState(null)
   const [orders, setOrders] = useState([])
+  const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     async function loadOrders () {
@@ -56,10 +57,12 @@ const OrderDetail = ({ user, gameId }) => {
   }
 
   const onSubmitOrders = async () => {
+    setSubmitting(true)
     let myOrders = {}
     myOrders[country] = orders
 
     await submitOrders(user, gameId, round, myOrders)
+    setSubmitting(false)
   }
 
   return <div>
@@ -124,6 +127,7 @@ const OrderDetail = ({ user, gameId }) => {
     {orders.length > 0 &&
       <Button onClick={onSubmitOrders}>Submit Orders</Button>
     }
+    {submitting && <Typography variant='body1'>Submitting...</Typography>}
   </div>
 }
 
