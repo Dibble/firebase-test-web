@@ -6,10 +6,10 @@ import { getAccessibleProvinces, getMovingUnits, getSupportableUnits } from '../
 
 const useStyles = makeStyles(theme => ({
   orderTypeSelect: {
-    width: '90px'
+    minWidth: '90px'
   },
   orderDetailSelect: {
-    width: '200px'
+    minWidth: '90px'
   },
   orderElement: {
     margin: theme.spacing(1)
@@ -24,14 +24,15 @@ const OrderDetail = ({ user, gameId }) => {
 
   const [round, setRound] = useState(null)
   const [country, setCountry] = useState(null)
-  const [units, setUnits] = useState(null)
   const [orders, setOrders] = useState([])
 
   useEffect(() => {
     async function loadOrders () {
-      let orderDetail = await getOrderDetail(user, gameId)
-      if (orderDetail) {
-        setOrders(orderDetail)
+      let result = await getOrderDetail(user, gameId)
+      if (result) {
+        setOrders(result.orders)
+        setCountry(result.country)
+        setRound(result.round)
       }
     }
 
@@ -56,11 +57,7 @@ const OrderDetail = ({ user, gameId }) => {
 
   const onSubmitOrders = async () => {
     let myOrders = {}
-    myOrders[country] = units.map((unit, idx) => ({
-      unit: `${unit.type} ${unit.location}`,
-      type: orders[idx].type,
-      detail: orders[idx].detail,
-    }))
+    myOrders[country] = orders
 
     await submitOrders(user, gameId, round, myOrders)
   }
@@ -75,7 +72,7 @@ const OrderDetail = ({ user, gameId }) => {
           <Grid item className={classes.orderElement}>
             <FormControl>
               <InputLabel htmlFor={`orderType${idx}`}>Order</InputLabel>
-              <Select className={classes.orderTypeSelect} onChange={handleOrderTypeChange(idx)} value={order.type} input={<Input name={'orderType'} id={`orderType${idx}`}></Input>}>
+              <Select autoWidth className={classes.orderTypeSelect} onChange={handleOrderTypeChange(idx)} value={order.type} input={<Input name={'orderType'} id={`orderType${idx}`}></Input>}>
                 <MenuItem value='Hold'>Hold</MenuItem>
                 <MenuItem value='Move'>Move</MenuItem>
                 <MenuItem value='Support'>Support</MenuItem>
@@ -87,7 +84,7 @@ const OrderDetail = ({ user, gameId }) => {
             <Grid item className={classes.orderElement}>
               <FormControl>
                 <InputLabel htmlFor={`orderDetail${idx}`}>Province</InputLabel>
-                <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={order.detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
+                <Select autoWidth className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={order.detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
                   {getAccessibleProvinces(order.unit, orders).map((province) =>
                     <MenuItem key={province.location} value={province.location}>{`${province.location}${province.requiresConvoy ? ' (requires convoy)' : ''}`}</MenuItem>
                   )}
@@ -99,7 +96,7 @@ const OrderDetail = ({ user, gameId }) => {
             <Grid item className={classes.orderElement}>
               <FormControl>
                 <InputLabel htmlFor={`orderDetail${idx}`}>Unit</InputLabel>
-                <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={order.detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
+                <Select autoWidth className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={order.detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
                   {getSupportableUnits(order.unit, orders).map((unit) =>
                     <MenuItem key={unit.name} value={unit.name}>{`${unit.name} - ${unit.detail}`}</MenuItem>
                   )}
@@ -111,7 +108,7 @@ const OrderDetail = ({ user, gameId }) => {
             <Grid item className={classes.orderElement}>
               <FormControl>
                 <InputLabel htmlFor={`orderDetail${idx}`}>Unit</InputLabel>
-                <Select className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={order.detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
+                <Select autoWidth className={classes.orderDetailSelect} onChange={handleOrderDetailChange(idx)} value={order.detail} input={<Input name={'orderDetail'} id={`orderDetail${idx}`}></Input>}>
                   {getMovingUnits(orders).map((unit) => {
                     const convoy = `${unit.name} - ${unit.destination}`
                     return <MenuItem key={unit.name} value={convoy}>{convoy}</MenuItem>
@@ -124,7 +121,7 @@ const OrderDetail = ({ user, gameId }) => {
         </Grid>
       </div>
     ))}
-    {units &&
+    {orders.length > 0 &&
       <Button onClick={onSubmitOrders}>Submit Orders</Button>
     }
   </div>
