@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 import Auth from './auth'
 import Games from './games'
 import GameDetail from './gameDetail'
@@ -9,6 +9,10 @@ import { AppBar, Toolbar, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({
+  link: {
+    color: 'inherit',
+    textDecoration: 'none',
+  },
   root: {
     flexGrow: 1
   },
@@ -26,8 +30,8 @@ const App = () => {
       <AppBar position='static'>
         <Toolbar>
           <Typography className={classes.title} variant='h6'>
-            Diplomacy
-        </Typography>
+            <Link to='/' className={classes.link}>Diplomacy</Link>
+          </Typography>
           <Auth user={user} setUser={setUser} />
         </Toolbar>
       </AppBar>
