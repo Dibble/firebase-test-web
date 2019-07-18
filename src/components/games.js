@@ -55,7 +55,7 @@ const Games = ({ user }) => {
         {games && games.map(game => (
           <TableRow hover={true} key={game.id} onClick={() => { window.location = `/game/${game.id}` }} className={classes.gameRow}>
             <TableCell>{game.name}</TableCell>
-            <TableCell>{game.players.length}</TableCell>
+            <TableCell>{`${game.players}`}</TableCell>
           </TableRow>
         ))}
       </TableBody>
