@@ -139,7 +139,7 @@ const GameDetail = ({ gameId, user }) => {
           </Grid>
         </Grid>
         <Grid container direction='row' justify='flex-end' alignItems='center'>
-          {game.currentState === 'Setup' && !game.players.some((player) => player.userUID === user.uid) &&
+          {game.currentState === 'Setup' && !game.players.some((player) => player.id === user.uid) &&
             <Grid item>
               <Button variant='contained' color='secondary' className={classes.button} onClick={onJoinGame}>
                 <Icon>add</Icon>
@@ -183,7 +183,7 @@ const GameDetail = ({ gameId, user }) => {
           </TableHead>
           <TableBody>
             {game.players.map((player) =>
-              <TableRow key={player.id} selected={player.userUID === user.uid} hover>
+              <TableRow key={player.id} selected={player.id === user.uid} hover>
                 <TableCell>{player.name}{player.email ? <small className={classes.userEmail}>{` (${player.email})`}</small> : ''}</TableCell>
                 <TableCell><Chip variant={player.country === 'Russia' ? 'outlined' : 'default'} className={getCountryColor(player.country)} label={player.country ? player.country : 'Not Assigned'} /></TableCell>
               </TableRow>)}
